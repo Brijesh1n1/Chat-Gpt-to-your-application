@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<head lang="en">
+    {% block head %}
+
+    {% endblock %}
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+</head>
+<body class="bg bg-gradient bg-light">
+
+{% block body %}
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+
+document.querySelector('#submitBtn').addEventListener('click', () => chat_ajax());
+
+});
+
+function chat_ajax(){
+
+let text = document.querySelector('#userText').value
+let chatCard = document.querySelector('#chatCard')
+chatCard.innerHTML += `
+<div class="card-body bg bg-primary">
+    <h5 class="card-title">${text}</h5>
+</div>
+`
+console.log(text)
+
+// Clear input:
+document.querySelector('#userText').value = null
+
+var loading = document.querySelector('#loading')
+loading.innerHTML = `
+<strong>Loading...</strong>
+<div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+`
+
+$.ajax({
+    type: 'POST',
+    url: '/ajax/',
+    data: {
+        'text': text
+    },
+    success: (res)=> {
+        let response = res.data
+        chatCard.innerHTML += `
+        <div class="card-body bg bg-light text-dark">
+              <p class="card-title">${response}</p>
+        </div>
+        `
+        console.log(response.split('.'), '---------')
+        loading.innerHTML = ''
+    },
+    error: ()=> {
+        console.log("There Was An Error!")
+    }
+})
+}
+</script>
+</body>
